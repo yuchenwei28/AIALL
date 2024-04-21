@@ -1,2 +1,7 @@
 # AIALL
-Multi model context passing
+Multi model context passing/n
+need：
+dashscope
+dotenv
+sparkai
+API-KEYS
