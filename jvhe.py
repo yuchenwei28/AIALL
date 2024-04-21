@@ -110,7 +110,7 @@ if __name__ == '__main__':
         if len(inp) > 100:
             print("Write it shorter!")
             continue
-        model = input("请选择模型：通义千问(qwen)、文心一言(ernie)、讯飞星火(xinhuo)")
+        model = input("model：通义千问(qwen)、文心一言(ernie)、讯飞星火(xinhuo)")
         if model == "qwen":
             call_with_messages_with_qwen(inp)
             lis_wenxin = zhuanhuan.t_to_w(lis_tongyi)
