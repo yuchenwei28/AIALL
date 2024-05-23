@@ -50,7 +50,7 @@ def call_with_messages_with_qwen(inputcontent):
                     {"role": "user", "content": inputcontent}]
     lis_tongyi.append({"role": "user", "content": inputcontent})
     response = dashscope.Generation.call(
-        "qwen1.5-72b-chat",
+        "qwen1.5-110b-chat",
         messages=messages1,
         result_format='message',
     )
