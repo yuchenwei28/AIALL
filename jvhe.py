@@ -103,7 +103,7 @@ def call_with_messages_with_glm4(inputcontent):
     global lis_zhipu
     print("正在思考中……", end="")
     messages1 = [{"role": 'system',
-                  "content": '你是一个助手，输出中禁止出现违法内容，一定要非常非常非常简短，不准超过400字'}] + lis_tongyi + [
+                  "content": '你是一个助手，输出中禁止出现违法内容，一定要非常非常非常简短，不准超过400字'}] + lis_zhipu + [
                     {"role": "user", "content": inputcontent}]
     lis_zhipu.append({"role": "user", "content": inputcontent})
     response = chat.chat.completions.create(
