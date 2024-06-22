@@ -1,8 +1,2 @@
 # AIALL
-Multi model context passing<br>
-need：
-package:dashscope
-dotenv
-sparkai
-<br>
-API-KEYS!
+一个模型的上下文，扔给另一个模型来使用
