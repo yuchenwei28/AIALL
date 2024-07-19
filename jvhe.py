@@ -6,31 +6,49 @@ from dotenv import load_dotenv
 from sparkai.llm.llm import ChatSparkLLM, ChunkPrintHandler
 from sparkai.core.messages import ChatMessage
 import zhuanhuan
-from openai import OpenAI
 import requests
 import time
 import hashlib
 import json
 from volcenginesdkarkruntime import Ark
+from openai import OpenAI
 
-clientark = Ark(ak="*",
-                sk="*")
+
+group_id = "abab-group_id"
+mm_api_key = "abab-api_key"
+
+clientbaichuan = OpenAI(
+    api_key="baichuan-api_key",
+    base_url="https://api.baichuan-ai.com/v1/",
+)
+
+
+clientark = Ark(ak="doubao-ak",
+                sk="doubao-sk")
 
 client = OpenAI(
-    api_key="*",
+    api_key="kimi-api_key",
     base_url="https://api.moonshot.cn/v1",
 )
-dashscope.api_key = "*"
+dashscope.api_key = "qwen-api_key"
 load_dotenv()
 spark = ChatSparkLLM(
     spark_api_url="wss://spark-api.xf-yun.com/v3.5/chat",
-    spark_app_id="*",
-    spark_api_key="*",
-    spark_api_secret="*",
+    spark_app_id="xinhuo-app_id",
+    spark_api_key="xinhuo-api_key",
+    spark_api_secret="xinhuo-api_secret",
     spark_llm_domain="generalv3.5",
     streaming=False,
 )
-chat = zhipuai.ZhipuAI(api_key="*")
+chat = zhipuai.ZhipuAI(api_key="qingyan-api_key")
+
+
+url = 'https://api-maas.singularity-ai.com/sky-work/api/v1/chat'
+app_key = 'tiangong-app_key'
+app_secret = 'tiangong-app_secret'
+timestamp = str(int(time.time()))
+sign_content = app_key + app_secret + timestamp
+sign_result = hashlib.md5(sign_content.encode('utf-8')).hexdigest()
 lis_tongyi = []
 lis_wenxin = []
 lis_xunfei = []
@@ -38,15 +56,8 @@ lis_zhipu = []
 lis_moonshot = []
 lis_tiangong = []
 lis_huoshan = []
-
-url = 'https://api-maas.singularity-ai.com/sky-work/api/v1/chat'
-app_key = '*'
-app_secret = '*'
-timestamp = str(int(time.time()))
-sign_content = app_key + app_secret + timestamp
-sign_result = hashlib.md5(sign_content.encode('utf-8')).hexdigest()
-
-
+lis_baichuan = []
+lis_minimax = []
 def call_with_messages_with_kimi(inputcontent):
     global lis_moonshot
     print("正在思考中……", end="")
@@ -200,6 +211,31 @@ def call_with_messages_with_sky_chat(inputcontent):
         lis_tiangong.pop()
     if len(lis_tiangong) >= 16:
         lis_tiangong = lis_tiangong[2:]
+def call_with_messages_with_abab(inputcontent):
+    global lis_minimax
+    print("正在思考中……", end="")
+    messages1 = [{"role": 'system',
+                  "content": '你是一个助手，输出中禁止出现违法内容，一定要非常非常非常简短，不准超过400字'}] + lis_minimax + [
+                    {"role": "user", "content": inputcontent}]
+    lis_minimax.append({"role": "user", "content": inputcontent})
+    url = f"https://api.minimax.chat/v1/text/chatcompletion_v2?GroupId={group_id}"
+    headers = {"Authorization": f"Bearer {mm_api_key}", "Content-Type": "application/json"}
+
+    request_body = {
+        "model": "abab6.5-chat",
+        "tokens_to_generate": 1024,
+        "messages": messages1,
+
+    }
+    response =requests.post(url, headers=headers, json=request_body)
+    if response.status_code == HTTPStatus.OK:
+        print("\r"+eval("True".join("False".join(response.text.split("false")).split("true")))["choices"][0]["message"]["content"])
+        lis_minimax.append({"role": "assistant", "content": eval("True".join("False".join(response.text.split("false")).split("true")))["choices"][0]["message"]["content"]})
+    else:
+        print("\r出错了", response)
+        lis_minimax.pop()
+    if len(lis_minimax) >= 16:
+        lis_minimax = lis_minimax[2:]
 
 
 def call_with_messages_with_doubao(inputcontent):
@@ -217,6 +253,23 @@ def call_with_messages_with_doubao(inputcontent):
 
     if len(lis_huoshan) >= 16:
         lis_huoshan = lis_huoshan[2:]
+def call_with_messages_with_baichuan(inputcontent):
+    global lis_baichuan
+    print("正在思考中……", end="")
+    messages1 = [{"role": 'system',
+                  "content": '你是一个助手，输出中禁止出现违法内容，一定要非常非常非常简短，不准超过400字'}] + lis_baichuan + [
+                    {"role": "user", "content": inputcontent}]
+    lis_baichuan.append({"role": "user", "content": inputcontent})
+    completion = clientbaichuan.chat.completions.create(
+        model="Baichuan4",
+        messages=messages1,
+        temperature=0.3,
+        stream=False
+    )
+    print("\r" + (completion.choices[0].message.content))
+    lis_baichuan.append({"role": "assistant", "content": completion.choices[0].message.content})
+    if len(lis_baichuan) >= 16:
+        lis_baichuan = lis_baichuan[2:]
 
 
 if __name__ == '__main__':
@@ -227,7 +280,7 @@ if __name__ == '__main__':
         if len(inp) > 100:
             print("哟，写小作文了，再写短一点！")
             continue
-        model = input("请选择模型：1.通义千问、2.文心一言、3.讯飞星火、4.智谱清言、5.Kimi、6.天工、7.豆包:")
+        model = input("请选择模型：1.通义千问、2.文心一言、3.讯飞星火、4.智谱清言、5.Kimi、6.天工、7.豆包、8.百川、9.海螺:")
         if model == "通义千问" or model == "1":
             call_with_messages_with_qwen(inp)
             lis_wenxin = zhuanhuan.t_to_w(lis_tongyi)
@@ -235,6 +288,9 @@ if __name__ == '__main__':
             lis_zhipu = zhuanhuan.t_to_z(lis_tongyi)
             lis_moonshot = zhuanhuan.t_to_k(lis_tongyi)
             lis_tiangong = zhuanhuan.t_to_g(lis_tongyi)
+            lis_huoshan = zhuanhuan.t_to_h(lis_tongyi)
+            lis_baichuan = zhuanhuan.t_to_b(lis_tongyi)
+            lis_minimax = zhuanhuan.t_to_a(lis_tongyi)
         elif model == "文心一言" or model == "2":
             call_with_messages_with_ernie(inp)
             lis_tongyi = zhuanhuan.w_to_t(lis_wenxin)
@@ -242,6 +298,9 @@ if __name__ == '__main__':
             lis_zhipu = zhuanhuan.w_to_z(lis_wenxin)
             lis_moonshot = zhuanhuan.w_to_k(lis_wenxin)
             lis_tiangong = zhuanhuan.w_to_g(lis_wenxin)
+            lis_huoshan = zhuanhuan.w_to_h(lis_wenxin)
+            lis_baichuan = zhuanhuan.w_to_b(lis_wenxin)
+            lis_minimax = zhuanhuan.w_to_a(lis_wenxin)
         elif model == "讯飞星火" or model == "3":
             call_with_messages_with_xinhuo(inp)
             lis_wenxin = zhuanhuan.x_to_w(lis_xunfei)
@@ -250,7 +309,8 @@ if __name__ == '__main__':
             lis_moonshot = zhuanhuan.x_to_k(lis_xunfei)
             lis_tiangong = zhuanhuan.x_to_g(lis_xunfei)
             lis_huoshan = zhuanhuan.x_to_h(lis_xunfei)
-
+            lis_baichuan = zhuanhuan.x_to_b(lis_xunfei)
+            lis_minimax = zhuanhuan.x_to_a(lis_xunfei)
         elif model == "智谱清言" or model == "4":
             call_with_messages_with_glm4(inp)
             lis_wenxin = zhuanhuan.z_to_w(lis_zhipu)
@@ -259,6 +319,8 @@ if __name__ == '__main__':
             lis_moonshot = zhuanhuan.z_to_k(lis_zhipu)
             lis_tiangong = zhuanhuan.z_to_g(lis_zhipu)
             lis_huoshan = zhuanhuan.z_to_h(lis_zhipu)
+            lis_baichuan = zhuanhuan.z_to_b(lis_zhipu)
+            lis_minimax = zhuanhuan.z_to_a(lis_zhipu)
         elif model == "Kimi" or model == "5":
             call_with_messages_with_kimi(inp)
             lis_wenxin = zhuanhuan.k_to_w(lis_moonshot)
@@ -267,6 +329,8 @@ if __name__ == '__main__':
             lis_zhipu = zhuanhuan.k_to_z(lis_moonshot)
             lis_tiangong = zhuanhuan.k_to_g(lis_moonshot)
             lis_huoshan = zhuanhuan.k_to_h(lis_moonshot)
+            lis_baichuan = zhuanhuan.k_to_b(lis_moonshot)
+            lis_minimax = zhuanhuan.k_to_a(lis_moonshot)
         elif model == "天工" or model == "6":
             call_with_messages_with_sky_chat(inp)
             lis_wenxin = zhuanhuan.g_to_w(lis_tiangong)
@@ -275,6 +339,8 @@ if __name__ == '__main__':
             lis_zhipu = zhuanhuan.g_to_z(lis_tiangong)
             lis_moonshot = zhuanhuan.g_to_k(lis_tiangong)
             lis_huoshan = zhuanhuan.g_to_h(lis_tiangong)
+            lis_baichuan = zhuanhuan.g_to_b(lis_tiangong)
+            lis_minimax = zhuanhuan.g_to_a(lis_tiangong)
         elif model == "豆包" or model == "7":
             call_with_messages_with_doubao(inp)
             lis_wenxin = zhuanhuan.h_to_w(lis_huoshan)
@@ -283,6 +349,29 @@ if __name__ == '__main__':
             lis_zhipu = zhuanhuan.h_to_z(lis_huoshan)
             lis_moonshot = zhuanhuan.h_to_k(lis_huoshan)
             lis_tiangong = zhuanhuan.h_to_g(lis_huoshan)
+            lis_baichuan = zhuanhuan.h_to_b(lis_huoshan)
+            lis_minimax = zhuanhuan.h_to_a(lis_huoshan)
+        elif model == "百川" or model == "8":
+            call_with_messages_with_baichuan(inp)
+            lis_wenxin = zhuanhuan.b_to_w(lis_baichuan)
+            lis_tongyi = zhuanhuan.b_to_t(lis_baichuan)
+            lis_xunfei = zhuanhuan.b_to_x(lis_baichuan)
+            lis_zhipu = zhuanhuan.b_to_z(lis_baichuan)
+            lis_moonshot = zhuanhuan.b_to_k(lis_baichuan)
+            lis_huoshan = zhuanhuan.b_to_h(lis_baichuan)
+            lis_tiangong = zhuanhuan.b_to_g(lis_baichuan)
+            lis_minimax = zhuanhuan.b_to_a(lis_baichuan)
+        elif model == "海螺" or model == "9":
+            call_with_messages_with_abab(inp)
+            lis_wenxin = zhuanhuan.a_to_w(lis_minimax)
+            lis_tongyi = zhuanhuan.a_to_t(lis_minimax)
+            lis_xunfei = zhuanhuan.a_to_x(lis_minimax)
+            lis_zhipu = zhuanhuan.a_to_z(lis_minimax)
+            lis_moonshot = zhuanhuan.a_to_k(lis_minimax)
+            lis_huoshan = zhuanhuan.a_to_h(lis_minimax)
+            lis_tiangong = zhuanhuan.a_to_g(lis_minimax)
+            lis_baichuan = zhuanhuan.a_to_b(lis_minimax)
+
         else:
             print("暂不支持此模型")
             continue
