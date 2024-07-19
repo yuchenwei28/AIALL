@@ -288,12 +288,222 @@ def z_to_h(z):
 def k_to_h(k):
     hh = []
     for ik in k:
-        hh.append({"role": dict_back_g[ik["role"]], "content": ik["content"]})
+        hh.append(ik)
     return hh
 
 
 def g_to_h(g):
     hh = []
     for ig in g:
-        hh.append(ig)
+        hh.append({"role": dict_back_g[ig["role"]], "content": ig["content"]})
     return hh
+
+
+def b_to_t(b):
+    tt = []
+    for ib in b:
+        tt.append(ib)
+    return tt
+
+
+def b_to_w(b):
+    ww = []
+    for ib in b:
+        ww.append(ib)
+    return ww
+
+
+def b_to_x(b):
+    xx = []
+    for ib in b:
+        xx.append(ChatMessage(role=ib["role"], content=ib["content"]))
+    return xx
+
+
+def b_to_z(b):
+    zz = []
+    for ib in b:
+        zz.append(ib)
+    return zz
+
+
+def b_to_k(b):
+    kk = []
+    for ib in b:
+        kk.append({"role": dict_to_g[ib["role"]], "content": ib["content"]})
+    return kk
+
+
+def b_to_g(b):
+    gg = []
+    for ib in b:
+        gg.append(ib)
+    return gg
+
+
+def t_to_b(t):
+    bb = []
+    for it in t:
+        bb.append(it)
+    return bb
+
+
+def w_to_b(w):
+    bb = []
+    for iw in w:
+        bb.append(iw)
+    return bb
+
+
+def x_to_b(x):
+    bb = []
+    for ix in x:
+        bb.append({"role": ix.role, "content": ix.content})
+    return bb
+
+
+def z_to_b(z):
+    bb = []
+    for iz in z:
+        bb.append(iz)
+    return bb
+
+
+def k_to_b(k):
+    bb = []
+    for ik in k:
+        bb.append(ik)
+    return bb
+
+
+def g_to_b(g):
+    bb = []
+    for ig in g:
+        bb.append(ig)
+    return bb
+
+
+def b_to_h(b):
+    hh = []
+    for ib in b:
+        hh.append(ib)
+    return hh
+
+
+def h_to_b(h):
+    bb = []
+    for ih in h:
+        bb.append(ih)
+    return bb
+
+
+def a_to_t(a):
+    tt = []
+    for ia in a:
+        tt.append(ia)
+    return tt
+
+
+def a_to_h(a):
+    hh = []
+    for ia in a:
+        hh.append(ia)
+        hh = h_to_b(hh)
+
+
+def a_to_b(a):
+    bb = []
+    for ia in a:
+        bb.append(ia)
+    return bb
+
+
+def a_to_w(a):
+    ww = []
+    for ia in a:
+        ww.append(ia)
+    return ww
+
+
+def a_to_x(a):
+    xx = []
+    for ia in a:
+        xx.append(ChatMessage(role=ia["role"], content=ia["content"]))
+    return xx
+
+
+def a_to_z(a):
+    zz = []
+    for ia in a:
+        zz.append(ia)
+    return zz
+
+
+def a_to_k(a):
+    kk = []
+    for ia in a:
+        kk.append({"role": dict_to_g[ia["role"]], "content": ia["content"]})
+    return kk
+
+
+def a_to_g(a):
+    gg = []
+    for ia in a:
+        gg.append(ia)
+    return gg
+
+
+def g_to_a(g):
+    aa = []
+    for ig in g:
+        aa.append(ig)
+    return aa
+
+
+def t_to_a(t):
+    aa = []
+    for it in t:
+        aa.append(it)
+    return aa
+
+
+def w_to_a(w):
+    aa = []
+    for iw in w:
+        aa.append(iw)
+    return aa
+
+
+def x_to_a(x):
+    aa = []
+    for ix in x:
+        aa.append({"role": ix.role, "content": ix.content})
+    return aa
+
+
+def z_to_a(z):
+    aa = []
+    for iz in z:
+        aa.append(iz)
+    return aa
+
+
+def k_to_a(k):
+    aa = []
+    for ik in k:
+        aa.append(ik)
+    return aa
+
+
+def b_to_a(b):
+    aa = []
+    for ib in b:
+        aa.append(ib)
+    return aa
+
+
+def h_to_a(h):
+    aa = []
+    for ih in h:
+        aa.append(ih)
+    return aa
